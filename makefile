@@ -9,10 +9,12 @@ SRC_DIR = src
 ENTRY_POINT = src/main.cpp
 
 #Libs
-OPENCL_INC = outsourced/OpenCL/
-OPENCL_LIB = outsourced/OpenCL/lib/
+OPENCL_INC = extern/OpenCL/
+OPENCL_LIB = extern/OpenCL/lib/
 
-INC=-I$(SRC_DIR) -I$(OPENCL_INC)
+GLM_INC = extern/glm/
+
+INC=-I$(SRC_DIR) -I$(OPENCL_INC) -I$(GLM_INC)
 LIBS =-L$(OPENCL_LIB)
 LINKS = -lOpenCL2
 OBJS = 
