@@ -17,7 +17,9 @@ GLM_INC = extern/glm/
 INC=-I$(SRC_DIR) -I$(OPENCL_INC) -I$(GLM_INC)
 LIBS =-L$(OPENCL_LIB)
 LINKS = -lOpenCL2
-OBJS = 
+#objects
+OPENCL_HELPER_OBJS = $(OUT_DIR)/OpenCLFactory.o
+OBJS = $(OPENCL_HELPER_OBJS)
 ALL_SETTINGS = $(CXX) $(CXXFLAGS) $(INC) $(LIBS)  
 
 
@@ -25,7 +27,7 @@ main: $(ENTRY_POINT) $(OBJS)
 	$(CXX) $(CXXFLAGS) $^  $(INC) $(LIBS) -o $(OUT_DIR)/$(LAUNCHER_NAME) $(LINKS)
 	./$(OUT_DIR)/$(LAUNCHER_NAME).exe
 
-$(MATHS_OBJS): $(OUT_DIR)/%.o: src/maths/%.cpp
+$(OPENCL_HELPER_OBJS): $(OUT_DIR)/%.o: src/OpenCLHelpers/%.cpp
 	$(ALL_SETTINGS) -c $< -o $@  
 
 
