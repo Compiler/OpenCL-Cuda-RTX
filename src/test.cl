@@ -1,5 +1,3 @@
-__kernal void test(__global char* data){
-
-
-
+void __kernel test(){
+    printf("Hello!!!!");
 }
