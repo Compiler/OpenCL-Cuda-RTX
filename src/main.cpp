@@ -22,7 +22,6 @@ void loadTextFromFile(const char fileName[], std::string& dst){
 
 int main(){
     
-
     auto [context, chosenDevice] = OpenCLFactory::selectDeviceAndContext();
     auto refCount = context.getInfo<CL_CONTEXT_REFERENCE_COUNT>();
     printf("The context has %d references\n", refCount);
@@ -32,20 +31,34 @@ int main(){
     cl_int error;
     cl::Program program(context, fileContents.c_str(), CL_TRUE, &error);
     DEBUG("%d", error);
+    if(error != 0){
+        auto log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(chosenDevice, &error);
+        ERROR("%d", error);
+        ERROR("%s", log.c_str());
 
-    error = program.build("-cl-std=CL1.2 -TESTER=4");
+    }
+
+    error = program.build("-cl-std=CL1.2 -DTESTER=64 -Werror");
     DEBUG("%d", error);
-    
+
     int twoInts[2];
     cl::Buffer buffer(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, sizeof(twoInts));
 
     cl::Kernel kernel(program, "test", &error);
+    std::vector<cl::Kernel> kernels;
+    program.createKernels(&kernels);
     DEBUG("%d", error);
+
     error = kernel.setArg(0, buffer);
     DEBUG("%d", error);
 
     printf("Executing kernel:\n");
     cl::CommandQueue queue(context, chosenDevice);
+    for(cl::Kernel ker : kernels){
+        error = ker.setArg(0, buffer);
+        DEBUG("%d", error);
+        queue.enqueueTask(ker);
+    }
     queue.enqueueTask(kernel);
     queue.enqueueReadBuffer(buffer, 1, 0, sizeof(twoInts), twoInts);
     printf("Returned: (%d, %d)", twoInts[0], twoInts[1]);

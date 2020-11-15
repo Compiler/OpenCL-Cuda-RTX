@@ -18,5 +18,5 @@
 #define STR(x) STR_FROM_INT(x)
 #define test(...) printf(ANSI_COLOR_BOLD_RED "ERROR::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_RED __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
 #define ERROR(...) printf(ANSI_COLOR_BOLD_RED "ERROR::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_RED __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
-#define LOG(...) printf(ANSI_COLOR_BOLD_CYAN "ERROR::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_CYAN __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
-#define DEBUG(...) printf(ANSI_COLOR_BOLD_GREEN "ERROR::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_GREEN __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
+#define LOG(...) printf(ANSI_COLOR_BOLD_CYAN "LOG  ::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_CYAN __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
+#define DEBUG(...) printf(ANSI_COLOR_BOLD_GREEN "DEBUG::"__FILE__ "::" STR(__LINE__) "\t" ANSI_COLOR_RESET ANSI_COLOR_GREEN __VA_ARGS__); printf(ANSI_COLOR_RESET "\n")
