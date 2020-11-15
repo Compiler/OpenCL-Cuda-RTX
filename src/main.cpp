@@ -43,7 +43,7 @@ int main(){
     DEBUG("%d", error);
 
     int twoInts[2];
-    cl::Buffer buffer(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, sizeof(twoInts));
+    cl::Buffer buffer(context, CL_MEM_READ_WRITE, sizeof(twoInts));
 
 
     KernelMap map;
@@ -54,7 +54,8 @@ int main(){
     DEBUG("%d", error);
 
     map.getKernel("test").setArg(0, buffer);
-    map.getKernel("test2").setArg(0, buffer);
+    map.getKernel("test2").setArg(0, 3);
+    map.getKernel("test2").setArg(1, 2);
     cl::CommandQueue queue(context, chosenDevice);
     map.executeKernels(queue);
     //queue.enqueueTask(kernel);

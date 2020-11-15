@@ -26,5 +26,4 @@ void KernelMap::executeKernels(cl::CommandQueue& queue){
         cl_int error = queue.enqueueTask(_kernels[name]);
         DEBUG("%d", error);
     }
-
 }
