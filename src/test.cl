@@ -4,6 +4,7 @@
 #else
 #define VAL 3
 #endif
+#define LOG(thing) printf("\x1b[33mKernel::Log\t" thing);printf( "\x1b[0m\n")
 void __kernel test(__global int* twoints){
     printf("Hello!\n");
     twoints[0] = VAL;

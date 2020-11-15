@@ -4,6 +4,7 @@
 #define __FILE__ -1
 #endif
 #include <OpenCLHelpers/OpenCLFactory.h>
+#include <OpenCLHelpers/KernelMap.h>
 #include <Tools/Logging.h>
 #include <CL/cl.hpp>
 #include <glm/glm.hpp>
@@ -44,24 +45,21 @@ int main(){
     int twoInts[2];
     cl::Buffer buffer(context, CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY, sizeof(twoInts));
 
-    cl::Kernel kernel(program, "test", &error);
-    std::vector<cl::Kernel> kernels;
-    program.createKernels(&kernels);
+
+    KernelMap map;
+
+    map.add(cl::Kernel(program, "test", &error));
+    DEBUG("%d", error);
+    map.add(cl::Kernel(program, "test2", &error));
     DEBUG("%d", error);
 
-    error = kernel.setArg(0, buffer);
-    DEBUG("%d", error);
-
-    printf("Executing kernel:\n");
+    map.getKernel("test").setArg(0, buffer);
+    map.getKernel("test2").setArg(0, buffer);
     cl::CommandQueue queue(context, chosenDevice);
-    for(cl::Kernel ker : kernels){
-        error = ker.setArg(0, buffer);
-        DEBUG("%d", error);
-        queue.enqueueTask(ker);
-    }
-    queue.enqueueTask(kernel);
+    map.executeKernels(queue);
+    //queue.enqueueTask(kernel);
     queue.enqueueReadBuffer(buffer, 1, 0, sizeof(twoInts), twoInts);
-    printf("Returned: (%d, %d)", twoInts[0], twoInts[1]);
+    LOG("Returned: (%d, %d)", twoInts[0], twoInts[1]);
 
     
     return 0;
