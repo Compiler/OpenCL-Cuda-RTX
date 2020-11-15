@@ -17,10 +17,11 @@ std::pair<cl::Context, cl::Device> OpenCLFactory::selectDeviceAndContext(bool pr
     bool found = false;
     if(print) printf("There are %d platforms supported\n", platforms.size());
     for(cl::Platform platform : platforms){
+        auto extens = platform.getInfo<CL_PLATFORM_EXTENSIONS>();
         cl::STRING_CLASS platformName = platform.getInfo<CL_PLATFORM_NAME>();
         cl::STRING_CLASS platformVendor = platform.getInfo<CL_PLATFORM_VENDOR>();
         cl::STRING_CLASS platformVersion = platform.getInfo<CL_PLATFORM_VERSION>();
-        if(print) printf("Platform '%s' with vendor '%s' and version '%s'\n", platformName.c_str(), platformVendor.c_str(), platformVersion.c_str());
+        if(print) printf("Platform '%s' with vendor '%s' and version '%s'\nExtensions: %s\n", platformName.c_str(), platformVendor.c_str(), platformVersion.c_str(), extens.c_str());
 
         std::vector<cl::Device> devices;
         platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);

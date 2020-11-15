@@ -3,5 +3,4 @@
 class OpenCLFactory{
     public:
         static std::pair<cl::Context, cl::Device> selectDeviceAndContext(bool print = false);
-
 };
