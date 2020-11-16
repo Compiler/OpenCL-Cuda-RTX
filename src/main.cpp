@@ -45,22 +45,29 @@ int main(){
     int twoInts[2];
     cl::Buffer buffer(context, CL_MEM_READ_WRITE, sizeof(twoInts));
 
+    glm::vec4 a(1,2,3,4);
+    glm::vec4 b(5,6,7,8);
+    glm::vec4 allData[2] = {a,b};
+    cl::Buffer mainBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(glm::vec4) * 2, &allData[0]);
+    cl_buffer_region region;
+    region.origin = 0;
+    region.size = sizeof(glm::vec4);
+    cl::Buffer subBuffer1 = mainBuffer.createSubBuffer(CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, (const void*)&region, &error);
+    cl_buffer_region region2;
+    region2.origin = sizeof(glm::vec4);
+    region2.size = sizeof(glm::vec4);
+    cl::Buffer subBuffer2 = mainBuffer.createSubBuffer(CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, (const void*)&region2, &error);
 
     KernelMap map;
 
-    map.add(cl::Kernel(program, "test", &error));
-    DEBUG("%d", error);
-    map.add(cl::Kernel(program, "test2", &error));
-    DEBUG("%d", error);
+    map.add(cl::Kernel(program, "multiply", &error));DEBUG("%d", error);
 
-    map.getKernel("test").setArg(0, buffer);
-    map.getKernel("test2").setArg(0, 3);
-    map.getKernel("test2").setArg(1, 2);
+    map.getKernel("multiply").setArg(0, subBuffer1);
+    map.getKernel("multiply").setArg(1, subBuffer2);
     cl::CommandQueue queue(context, chosenDevice);
     map.executeKernels(queue);
-    //queue.enqueueTask(kernel);
-    queue.enqueueReadBuffer(buffer, 1, 0, sizeof(twoInts), twoInts);
-    LOG("Returned: (%d, %d)", twoInts[0], twoInts[1]);
+
+
 
     
     return 0;

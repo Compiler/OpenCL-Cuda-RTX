@@ -15,3 +15,14 @@ void __kernel test(__global int* twoints){
 void __kernel test2(int a, int b){
     printf("%d + %d = %d\n", a, b, a+b);
 }
+
+//dot a 4x4 vector
+void __kernel multiply(__global float* vecA, __global float* vecB){
+    int spot = 0;
+    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
+    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
+    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
+    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
+
+
+}
