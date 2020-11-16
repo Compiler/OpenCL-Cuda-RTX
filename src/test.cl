@@ -17,12 +17,11 @@ void __kernel test2(int a, int b){
 }
 
 //dot a 4x4 vector
-void __kernel multiply(__global float* vecA, __global float* vecB){
-    int spot = 0;
-    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
-    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
-    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
-    printf("%f * %f = %f\n", vecA[spot], vecB[spot], vecA[spot] * vecB[spot++]);
+void __kernel multiply(__global float* vecA, __global float* vecB, __global float* result){
+    int index = get_global_id(0);
+    result[index] = vecA[index] * vecB[index];
+    
+    printf("WorkItem: %d -- %f * %f = %f\n", index, vecA[index], vecB[index], result[index]);
 
 
 }

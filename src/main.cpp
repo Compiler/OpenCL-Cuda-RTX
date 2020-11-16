@@ -47,8 +47,8 @@ int main(){
 
     glm::vec4 a(1,2,3,4);
     glm::vec4 b(5,6,7,8);
-    glm::vec4 allData[2] = {a,b};
-    cl::Buffer mainBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(glm::vec4) * 2, &allData[0]);
+    glm::vec4 allData[3] = {a,b, glm::vec4(0)};
+    cl::Buffer mainBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(glm::vec4) * 3, &allData[0]);
     cl_buffer_region region;
     region.origin = 0;
     region.size = sizeof(glm::vec4);
@@ -57,16 +57,24 @@ int main(){
     region2.origin = sizeof(glm::vec4);
     region2.size = sizeof(glm::vec4);
     cl::Buffer subBuffer2 = mainBuffer.createSubBuffer(CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, (const void*)&region2, &error);
+    cl_buffer_region region3;
+    region3.origin = sizeof(glm::vec4);
+    region3.size = sizeof(glm::vec4);
+    cl::Buffer subBuffer3 = mainBuffer.createSubBuffer(CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, (const void*)&region3, &error);
 
     KernelMap map;
 
-    map.add(cl::Kernel(program, "multiply", &error));DEBUG("%d", error);
+    cl::Kernel kern(program, "multiply", &error);DEBUG("%d", error);
+    kern.setArg(0, subBuffer1);
+    kern.setArg(1, subBuffer2);
+    kern.setArg(2, subBuffer3);
 
-    map.getKernel("multiply").setArg(0, subBuffer1);
-    map.getKernel("multiply").setArg(1, subBuffer2);
     cl::CommandQueue queue(context, chosenDevice);
-    map.executeKernels(queue);
+    auto workItems = 4;
+    queue.enqueueNDRangeKernel(kern, 1, workItems);
+    queue.enqueueReadBuffer(subBuffer3, CL_TRUE, 0, sizeof(glm::vec4), &allData[2]);
 
+    LOG("Returned Vec:\t[%f %f %f %f]", allData[2].x, allData[2].y, allData[2].z, allData[2].w);
 
 
     
