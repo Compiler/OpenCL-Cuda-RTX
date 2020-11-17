@@ -25,3 +25,11 @@ void __kernel multiply(__global float* vecA, __global float* vecB, __global floa
 
 
 }
+
+__kernel void localMem(__local float* x){
+    printf("Sup");
+    float4 a = (float4) (1.0);
+    printf("xyzw %f %f %f %f", a.x, a.s1, a.z, a.w);
+    x[0] = a.x;
+
+}

@@ -23,7 +23,7 @@ void loadTextFromFile(const char fileName[], std::string& dst){
 
 int main(){
     
-    auto [context, chosenDevice] = OpenCLFactory::selectDeviceAndContext();
+    auto [context, chosenDevice] = OpenCLFactory::selectDeviceAndContext(true);
     auto refCount = context.getInfo<CL_CONTEXT_REFERENCE_COUNT>();
     printf("The context has %d references\n", refCount);
 
@@ -62,8 +62,11 @@ int main(){
     region3.size = sizeof(glm::vec4);
     cl::Buffer subBuffer3 = mainBuffer.createSubBuffer(CL_MEM_READ_WRITE, CL_BUFFER_CREATE_TYPE_REGION, (const void*)&region3, &error);
 
-    KernelMap map;
 
+    cl::Buffer aBuf(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, sizeof(float) * 4, NULL);
+    KernelMap map;
+    cl::Kernel kern1(program, "localMem", &error);DEBUG("%d", error);
+    kern1.setArg(0, aBuf);
     cl::Kernel kern(program, "multiply", &error);DEBUG("%d", error);
     kern.setArg(0, subBuffer1);
     kern.setArg(1, subBuffer2);
@@ -71,10 +74,12 @@ int main(){
 
     cl::CommandQueue queue(context, chosenDevice);
     auto workItems = 4;
-    queue.enqueueNDRangeKernel(kern, 1, workItems);
-    queue.enqueueReadBuffer(subBuffer3, CL_TRUE, 0, sizeof(glm::vec4), &allData[2]);
+    //queue.enqueueNDRangeKernel(kern, 0, workItems);
+    queue.enqueueNDRangeKernel(kern1, 0, workItems);
+    glm::vec4 thing;
+    queue.enqueueReadBuffer(aBuf, CL_TRUE, 0, sizeof(glm::vec4), &thing);
 
-    LOG("Returned Vec:\t[%f %f %f %f]", allData[2].x, allData[2].y, allData[2].z, allData[2].w);
+    LOG("Returned Vec:\t[%f %f %f %f]", thing.x, thing.y, thing.z, thing.w);
 
 
     
